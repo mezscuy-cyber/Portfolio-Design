@@ -4,28 +4,31 @@ import p1Img from "../../assets/project1.png";
 import p2Img from "../../assets/project2.png";
 import p3Img from "../../assets/project3.png";
 
-export function Projects() {
-  const projects = [
-    {
-      title: "Neon Nexus",
-      category: "Web Application",
-      image: p1Img,
-      tags: ["React", "TypeScript", "Tailwind", "Zustand"]
-    },
-    {
-      title: "Vanguard Store",
-      category: "E-Commerce",
-      image: p2Img,
-      tags: ["Next.js", "Shopify", "Framer Motion"]
-    },
-    {
-      title: "Aura Generative",
-      category: "Creative Portfolio",
-      image: p3Img,
-      tags: ["Three.js", "React", "WebGL"]
-    }
-  ];
+const projects = [
+  {
+    title: "Neon Nexus",
+    category: "Web Application",
+    image: p1Img,
+    tags: ["React", "TypeScript", "Tailwind", "Zustand"],
+    url: "https://github.com/xenodev/neon-nexus",
+  },
+  {
+    title: "Vanguard Store",
+    category: "E-Commerce",
+    image: p2Img,
+    tags: ["Next.js", "Shopify", "Framer Motion"],
+    url: "https://github.com/xenodev/vanguard-store",
+  },
+  {
+    title: "Aura Generative",
+    category: "Creative Portfolio",
+    image: p3Img,
+    tags: ["Three.js", "React", "WebGL"],
+    url: "https://github.com/xenodev/aura-generative",
+  },
+];
 
+export function Projects() {
   return (
     <section id="projects" className="py-24 relative">
       <div className="container mx-auto px-6">
@@ -36,29 +39,32 @@ export function Projects() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => (
-            <motion.div
+            <motion.a
               key={index}
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid={`link-project-${index}`}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="group cursor-pointer"
+              className="group cursor-pointer block"
             >
               <div className="relative aspect-[4/5] overflow-hidden border border-border mb-6">
-                <img 
-                  src={project.image} 
-                  alt={project.title} 
+                <img
+                  src={project.image}
+                  alt={project.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                
-                {/* Hover Overlay */}
+
                 <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-6 text-center backdrop-blur-sm">
                   <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center mb-6 scale-0 group-hover:scale-100 transition-transform duration-500 delay-100">
                     <ArrowUpRight size={24} />
                   </div>
                   <p className="text-sm font-bold tracking-widest uppercase mb-4 text-primary">View Case Study</p>
                   <div className="flex flex-wrap justify-center gap-2">
-                    {project.tags.map(tag => (
+                    {project.tags.map((tag) => (
                       <span key={tag} className="text-xs px-3 py-1 bg-card border border-border text-foreground">
                         {tag}
                       </span>
@@ -66,21 +72,28 @@ export function Projects() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-2xl font-bold uppercase mb-1 group-hover:text-primary transition-colors">{project.title}</h3>
                   <p className="text-muted-foreground text-sm uppercase tracking-wider">{project.category}</p>
                 </div>
+                <ArrowUpRight size={20} className="text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
               </div>
-            </motion.div>
+            </motion.a>
           ))}
         </div>
-        
+
         <div className="mt-16 text-center">
-          <button className="px-8 py-4 bg-transparent border border-primary text-primary font-bold uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-colors">
+          <a
+            href="https://github.com/xenodev"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="link-all-projects"
+            className="inline-block px-8 py-4 bg-transparent border border-primary text-primary font-bold uppercase tracking-widest hover:bg-primary hover:text-primary-foreground transition-colors"
+          >
             View All Projects
-          </button>
+          </a>
         </div>
       </div>
     </section>

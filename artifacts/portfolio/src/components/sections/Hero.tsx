@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Github, Linkedin, Twitter, Instagram } from "lucide-react";
+import { Github, Linkedin, Twitter, Instagram } from "lucide-react";
 import heroImg from "../../assets/hero.png";
+import { SOCIAL_LINKS } from "../../lib/links";
 
 export function Hero() {
   const containerVariants = {
@@ -19,15 +20,26 @@ export function Hero() {
     visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 10 } },
   };
 
+  const socialLinks = [
+    { href: SOCIAL_LINKS.github, icon: <Github size={20} />, label: "GitHub" },
+    { href: SOCIAL_LINKS.linkedin, icon: <Linkedin size={20} />, label: "LinkedIn" },
+    { href: SOCIAL_LINKS.twitter, icon: <Twitter size={20} />, label: "Twitter" },
+    { href: SOCIAL_LINKS.instagram, icon: <Instagram size={20} />, label: "Instagram" },
+  ];
+
   return (
     <section id="home" className="relative min-h-[100dvh] flex items-center pt-24 overflow-hidden">
-      {/* Background visual element */}
       <div className="absolute top-0 right-0 w-[50vw] h-[100dvh] opacity-30 md:opacity-50 z-0">
-         <img src={heroImg} alt="Abstract Neon" className="w-full h-full object-cover object-left mask-image-gradient-left" style={{ maskImage: 'linear-gradient(to right, transparent, black)', WebkitMaskImage: 'linear-gradient(to right, transparent, black)' }} />
+        <img
+          src={heroImg}
+          alt="Abstract Neon"
+          className="w-full h-full object-cover object-left"
+          style={{ maskImage: "linear-gradient(to right, transparent, black)", WebkitMaskImage: "linear-gradient(to right, transparent, black)" }}
+        />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -47,20 +59,21 @@ export function Hero() {
             <p className="text-xl md:text-2xl text-muted-foreground max-w-xl font-light">
               I craft bold, high-performance digital experiences that leave a lasting impact. Unapologetic design meets flawless execution.
             </p>
-            
+
             <div className="flex gap-4">
-              <a href="#" className="w-12 h-12 flex items-center justify-center border border-border hover:border-primary hover:text-primary transition-all rounded-full">
-                <Github size={20} />
-              </a>
-              <a href="#" className="w-12 h-12 flex items-center justify-center border border-border hover:border-primary hover:text-primary transition-all rounded-full">
-                <Linkedin size={20} />
-              </a>
-              <a href="#" className="w-12 h-12 flex items-center justify-center border border-border hover:border-primary hover:text-primary transition-all rounded-full">
-                <Twitter size={20} />
-              </a>
-              <a href="#" className="w-12 h-12 flex items-center justify-center border border-border hover:border-primary hover:text-primary transition-all rounded-full">
-                <Instagram size={20} />
-              </a>
+              {socialLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={link.label}
+                  data-testid={`link-social-${link.label.toLowerCase()}`}
+                  className="w-12 h-12 flex items-center justify-center border border-border hover:border-primary hover:text-primary transition-all rounded-full"
+                >
+                  {link.icon}
+                </a>
+              ))}
             </div>
           </motion.div>
 
@@ -80,15 +93,14 @@ export function Hero() {
           </motion.div>
         </motion.div>
       </div>
-      
-      {/* Decorative Star */}
-      <motion.div 
+
+      <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         className="absolute bottom-20 right-20 text-primary opacity-50 hidden md:block"
       >
         <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M50 0L53.5 46.5L100 50L53.5 53.5L50 100L46.5 53.5L0 50L46.5 46.5L50 0Z" fill="currentColor"/>
+          <path d="M50 0L53.5 46.5L100 50L53.5 53.5L50 100L46.5 53.5L0 50L46.5 46.5L50 0Z" fill="currentColor" />
         </svg>
       </motion.div>
     </section>
