@@ -1,0 +1,32 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "GucyqAx9hFP7VasSWUp-R"
+uri = "file://artifacts/portfolio/src/assets/hero.png"
+type = "image"
+title = "Neon abstract geometric hero image"
+
+[[generated]]
+id = "og0zcdc-_6Sz2GbQU5BsZ"
+uri = "file://artifacts/portfolio/src/assets/about.png"
+type = "image"
+title = "Creative developer profile photo"
+
+[[generated]]
+id = "T4-7Nt6tMewv2JEEOPKXu"
+uri = "file://artifacts/portfolio/src/assets/project1.png"
+type = "image"
+title = "Cyberpunk web dashboard UI"
+
+[[generated]]
+id = "kDZ6niXrowe7X5TPgT4Qe"
+uri = "file://artifacts/portfolio/src/assets/project2.png"
+type = "image"
+title = "E-commerce mobile app mockup"
+
+[[generated]]
+id = "oSsZJHLD_AqfPC5eDplMx"
+uri = "file://artifacts/portfolio/src/assets/project3.png"
+type = "image"
+title = "Generative art brand site"
