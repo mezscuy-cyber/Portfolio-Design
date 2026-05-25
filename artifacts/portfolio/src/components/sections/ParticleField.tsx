@@ -1,20 +1,21 @@
 import { useEffect, useRef } from "react";
 
-interface Particle {
+interface Star {
   x: number;
   y: number;
   vx: number;
   vy: number;
   radius: number;
   alpha: number;
+  twinkleSpeed: number;
+  twinklePhase: number;
   color: string;
-  life: number;
-  maxLife: number;
 }
 
 export function ParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -9999, y: -9999 });
+  const starsRef = useRef<Star[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,42 +28,31 @@ export function ParticleField() {
     canvas.width = W;
     canvas.height = H;
 
+    // Elegant star colors — dim greens, whites, soft teals
     const COLORS = [
-      "204,255,0",    // neon lime
-      "0,102,255",    // cobalt blue
-      "180,255,200",  // mint
-      "255,255,255",  // white
-      "140,255,100",  // light green
+      "180,255,200",   // mint white
+      "160,255,160",   // soft green
+      "200,255,220",   // pale green-white
+      "220,255,230",   // near white green
+      "140,220,180",   // muted teal
     ];
 
-    const particles: Particle[] = [];
+    const spawn = (): Star => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: (Math.random() - 0.5) * 0.12,
+      radius: 0.5 + Math.random() * 1.5,
+      alpha: 0.3 + Math.random() * 0.5,
+      twinkleSpeed: 0.008 + Math.random() * 0.02,
+      twinklePhase: Math.random() * Math.PI * 2,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    });
+
+    starsRef.current = Array.from({ length: 90 }, spawn);
+
     let animId: number;
-
-    const spawnParticle = (mx?: number, my?: number) => {
-      const cx = W / 2;
-      const cy = H / 2;
-      const angle = Math.random() * Math.PI * 2;
-      const dist = Math.random() * Math.min(W, H) * 0.45;
-      const x = mx !== undefined ? mx : cx + Math.cos(angle) * dist;
-      const y = my !== undefined ? my : cy + Math.sin(angle) * dist;
-      const speed = 0.2 + Math.random() * 0.8;
-      const dir = Math.random() * Math.PI * 2;
-      const maxLife = 80 + Math.random() * 120;
-      particles.push({
-        x,
-        y,
-        vx: Math.cos(dir) * speed,
-        vy: Math.sin(dir) * speed - 0.4,
-        radius: 1.5 + Math.random() * 3,
-        alpha: 0,
-        color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        life: 0,
-        maxLife,
-      });
-    };
-
-    // Spawn initial particles
-    for (let i = 0; i < 120; i++) spawnParticle();
+    let t = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -70,93 +60,103 @@ export function ParticleField() {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
       };
-      // Spawn burst on move
-      if (Math.random() < 0.4) spawnParticle(mouseRef.current.x, mouseRef.current.y);
     };
-
     canvas.addEventListener("mousemove", handleMouseMove);
 
     const draw = () => {
       ctx.clearRect(0, 0, W, H);
 
-      // Spawn ambient particles continuously
-      if (particles.length < 200 && Math.random() < 0.3) spawnParticle();
-
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
+      const stars = starsRef.current;
 
-      particles.forEach((p, i) => {
-        p.life++;
-        const progress = p.life / p.maxLife;
-        p.alpha = progress < 0.2
-          ? progress / 0.2
-          : progress > 0.8
-          ? (1 - progress) / 0.2
-          : 1;
-
-        // Mouse attraction within 120px
-        const dx = mx - p.x;
-        const dy = my - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120 && dist > 0) {
-          p.vx += (dx / dist) * 0.08;
-          p.vy += (dy / dist) * 0.08;
-        }
-
-        // Drag
-        p.vx *= 0.97;
-        p.vy *= 0.97;
-
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.life >= p.maxLife) {
-          particles.splice(i, 1);
-          spawnParticle();
-          return;
-        }
-
-        // Draw glow
-        const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 4);
-        glow.addColorStop(0, `rgba(${p.color},${p.alpha * 0.9})`);
-        glow.addColorStop(0.5, `rgba(${p.color},${p.alpha * 0.3})`);
-        glow.addColorStop(1, `rgba(${p.color},0)`);
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius * 4, 0, Math.PI * 2);
-        ctx.fillStyle = glow;
-        ctx.fill();
-
-        // Core dot
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
-        ctx.fill();
-      });
-
-      // Connection lines between close particles
-      for (let i = 0; i < Math.min(particles.length, 80); i++) {
-        for (let j = i + 1; j < Math.min(particles.length, 80); j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
+      // Draw constellation connections first
+      for (let i = 0; i < stars.length; i++) {
+        for (let j = i + 1; j < stars.length; j++) {
+          const dx = stars[i].x - stars[j].x;
+          const dy = stars[i].y - stars[j].y;
           const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 60) {
-            const opacity = (1 - d / 60) * 0.15;
+          if (d < 85) {
+            const fade = 1 - d / 85;
             ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(204,255,0,${opacity})`;
+            ctx.moveTo(stars[i].x, stars[i].y);
+            ctx.lineTo(stars[j].x, stars[j].y);
+            ctx.strokeStyle = `rgba(100,220,140,${fade * 0.12})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
       }
 
+      // Draw stars
+      stars.forEach((star) => {
+        // Gentle drift
+        star.x += star.vx;
+        star.y += star.vy;
+
+        // Wrap
+        if (star.x < 0) star.x = W;
+        if (star.x > W) star.x = 0;
+        if (star.y < 0) star.y = H;
+        if (star.y > H) star.y = 0;
+
+        // Subtle mouse repulsion — gentle push away
+        const dx = star.x - mx;
+        const dy = star.y - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100 && dist > 0) {
+          const force = (1 - dist / 100) * 0.04;
+          star.vx += (dx / dist) * force;
+          star.vy += (dy / dist) * force;
+        }
+
+        // Speed clamp
+        const speed = Math.sqrt(star.vx * star.vx + star.vy * star.vy);
+        if (speed > 0.5) {
+          star.vx = (star.vx / speed) * 0.5;
+          star.vy = (star.vy / speed) * 0.5;
+        }
+
+        // Damping back to base drift
+        star.vx = star.vx * 0.98 + (Math.random() - 0.5) * 0.002;
+        star.vy = star.vy * 0.98 + (Math.random() - 0.5) * 0.002;
+
+        // Twinkling alpha
+        const twinkle = star.alpha * (0.6 + 0.4 * Math.sin(t * star.twinkleSpeed + star.twinklePhase));
+
+        // Soft glow halo
+        const glow = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.radius * 5);
+        glow.addColorStop(0, `rgba(${star.color},${twinkle * 0.6})`);
+        glow.addColorStop(1, `rgba(${star.color},0)`);
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius * 5, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+
+        // Core star dot
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${star.color},${twinkle})`;
+        ctx.fill();
+      });
+
+      // Mouse cursor halo — ethereal green ring
+      if (mx > 0 && mx < W && my > 0 && my < H) {
+        const halo = ctx.createRadialGradient(mx, my, 0, mx, my, 60);
+        halo.addColorStop(0, "rgba(100,220,140,0.06)");
+        halo.addColorStop(0.6, "rgba(100,220,140,0.02)");
+        halo.addColorStop(1, "rgba(100,220,140,0)");
+        ctx.beginPath();
+        ctx.arc(mx, my, 60, 0, Math.PI * 2);
+        ctx.fillStyle = halo;
+        ctx.fill();
+      }
+
+      t += 1;
       animId = requestAnimationFrame(draw);
     };
 
     draw();
-
     return () => {
       cancelAnimationFrame(animId);
       canvas.removeEventListener("mousemove", handleMouseMove);

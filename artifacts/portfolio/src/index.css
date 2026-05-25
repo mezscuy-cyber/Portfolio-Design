@@ -74,44 +74,47 @@
   --elevate-1: rgba(255,255,255, .03);
   --elevate-2: rgba(255,255,255, .08);
 
-  --background: 0 0% 4%;
-  --foreground: 0 0% 100%;
-  --border: 0 0% 15%;
+  /* Deep dark green-black base */
+  --background: 145 30% 3%;
+  --foreground: 120 10% 95%;
+  --border: 145 15% 12%;
   
-  --card: 0 0% 6%;
-  --card-foreground: 0 0% 100%;
-  --card-border: 0 0% 15%;
+  --card: 145 25% 5%;
+  --card-foreground: 120 10% 95%;
+  --card-border: 145 15% 12%;
   
-  --sidebar: 0 0% 6%;
-  --sidebar-foreground: 0 0% 100%;
-  --sidebar-border: 0 0% 15%;
-  --sidebar-primary: 72 100% 50%;
-  --sidebar-primary-foreground: 0 0% 4%;
-  --sidebar-accent: 0 0% 12%;
-  --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 72 100% 50%;
+  --sidebar: 145 25% 5%;
+  --sidebar-foreground: 120 10% 95%;
+  --sidebar-border: 145 15% 12%;
+  --sidebar-primary: 142 70% 45%;
+  --sidebar-primary-foreground: 145 30% 3%;
+  --sidebar-accent: 145 20% 8%;
+  --sidebar-accent-foreground: 120 10% 95%;
+  --sidebar-ring: 142 70% 45%;
   
-  --popover: 0 0% 6%;
-  --popover-foreground: 0 0% 100%;
-  --popover-border: 0 0% 15%;
+  --popover: 145 25% 5%;
+  --popover-foreground: 120 10% 95%;
+  --popover-border: 145 15% 12%;
   
-  --primary: 72 100% 50%;
-  --primary-foreground: 0 0% 4%;
+  /* Vibrant emerald green as primary */
+  --primary: 142 70% 45%;
+  --primary-foreground: 145 30% 3%;
   
-  --secondary: 215 100% 45%;
-  --secondary-foreground: 0 0% 100%;
+  /* Softer teal as secondary */
+  --secondary: 168 60% 40%;
+  --secondary-foreground: 120 10% 95%;
   
-  --muted: 0 0% 15%;
-  --muted-foreground: 0 0% 65%;
+  --muted: 145 15% 10%;
+  --muted-foreground: 145 10% 55%;
   
-  --accent: 72 100% 50%;
-  --accent-foreground: 0 0% 4%;
+  --accent: 142 70% 45%;
+  --accent-foreground: 145 30% 3%;
   
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
   
-  --input: 0 0% 20%;
-  --ring: 72 100% 50%;
+  --input: 145 15% 12%;
+  --ring: 142 70% 45%;
   
   --chart-1: 72 100% 50%;
   --chart-2: 215 100% 45%;
@@ -182,37 +185,38 @@
   to { transform: rotate(360deg); }
 }
 
-/* ── Glass Hologram Card ── */
+/* ── Deep Glass Card — dark green tinted ── */
 .glass-card {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    rgba(204, 255, 0, 0.03) 50%,
-    rgba(0, 102, 255, 0.04) 100%
+    rgba(5, 25, 12, 0.75) 0%,
+    rgba(8, 32, 16, 0.65) 50%,
+    rgba(4, 20, 10, 0.75) 100%
   );
-  backdrop-filter: blur(12px) saturate(1.4);
-  -webkit-backdrop-filter: blur(12px) saturate(1.4);
-  border: 1px solid rgba(204, 255, 0, 0.12);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border: 1px solid rgba(50, 180, 90, 0.15);
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 0 0 0.5px rgba(0, 102, 255, 0.08);
+    0 4px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(80, 220, 120, 0.06),
+    0 0 0 0.5px rgba(30, 120, 60, 0.1);
 }
 
-/* Apply glass effect to all section cards */
+/* Deep dark green glass sections */
 .glass-section {
   background: linear-gradient(
     160deg,
-    rgba(10, 10, 10, 0.82) 0%,
-    rgba(14, 14, 20, 0.88) 100%
+    rgba(3, 14, 7, 0.88) 0%,
+    rgba(6, 20, 10, 0.92) 50%,
+    rgba(4, 16, 8, 0.88) 100%
   );
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(204, 255, 0, 0.06);
-  border-bottom: 1px solid rgba(0, 102, 255, 0.06);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(40, 160, 80, 0.08);
+  border-bottom: 1px solid rgba(20, 100, 50, 0.06);
 }
 
-/* Holographic shimmer line */
+/* Emerald shimmer border */
 .holo-border {
   position: relative;
 }
@@ -224,9 +228,9 @@
   padding: 1px;
   background: linear-gradient(
     135deg,
-    rgba(204, 255, 0, 0.3),
-    rgba(0, 102, 255, 0.2),
-    rgba(204, 255, 0, 0.1)
+    rgba(50, 200, 100, 0.25),
+    rgba(20, 160, 80, 0.1),
+    rgba(80, 220, 130, 0.2)
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;

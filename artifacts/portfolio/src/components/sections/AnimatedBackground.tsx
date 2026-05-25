@@ -19,71 +19,71 @@ export function AnimatedBackground() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Orbs: position, velocity, radius, color
-    const orbs = [
-      { x: 0.15, y: 0.25, vx: 0.00018, vy: 0.00012, r: 0.38, color: "72,100%,50%" },   // neon lime
-      { x: 0.75, y: 0.6,  vx: -0.00014, vy: 0.00016, r: 0.42, color: "215,100%,45%" },  // cobalt blue
-      { x: 0.5,  y: 0.85, vx: 0.00012, vy: -0.0001,  r: 0.28, color: "260,90%,55%" },   // violet
-      { x: 0.88, y: 0.15, vx: -0.0001, vy: 0.00013,  r: 0.32, color: "180,100%,40%" },  // cyan
-      { x: 0.35, y: 0.7,  vx: 0.00016, vy: -0.00014, r: 0.24, color: "72,100%,50%" },   // neon lime small
+    // Aurora wave bands — deep dark greens
+    const bands = [
+      { speed: 0.0004, amplitude: 0.08, freq: 1.2, y: 0.3,  color: [10, 40, 20],  alpha: 0.55 },
+      { speed: 0.0003, amplitude: 0.06, freq: 0.9, y: 0.55, color: [5, 60, 25],   alpha: 0.4  },
+      { speed: 0.0005, amplitude: 0.07, freq: 1.5, y: 0.75, color: [15, 30, 15],  alpha: 0.35 },
+      { speed: 0.0002, amplitude: 0.05, freq: 0.7, y: 0.15, color: [8, 55, 22],   alpha: 0.3  },
     ];
 
     const draw = () => {
       const w = canvas.width;
       const h = canvas.height;
 
-      ctx.clearRect(0, 0, w, h);
-
-      // Deep dark base
-      ctx.fillStyle = "hsl(0,0%,4%)";
+      // Very dark base — near black with slight green tint
+      ctx.fillStyle = "#040a06";
       ctx.fillRect(0, 0, w, h);
 
-      // Animated orbs
-      orbs.forEach((orb) => {
-        orb.x += orb.vx;
-        orb.y += orb.vy;
-        if (orb.x < -0.1 || orb.x > 1.1) orb.vx *= -1;
-        if (orb.y < -0.1 || orb.y > 1.1) orb.vy *= -1;
+      // Aurora bands — sweeping gradient waves
+      bands.forEach((band) => {
+        const cy = band.y * h + Math.sin(t * band.speed * 1000 + band.freq) * band.amplitude * h;
+        const bandH = h * 0.35;
 
-        const cx = orb.x * w;
-        const cy = orb.y * h;
-        const r = orb.r * Math.min(w, h);
+        const grad = ctx.createLinearGradient(0, cy - bandH, 0, cy + bandH);
+        const [r, g, b] = band.color;
+        grad.addColorStop(0, `rgba(${r},${g},${b},0)`);
+        grad.addColorStop(0.4, `rgba(${r},${g},${b},${band.alpha})`);
+        grad.addColorStop(0.6, `rgba(${r},${g},${b},${band.alpha * 0.7})`);
+        grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
 
-        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        grad.addColorStop(0, `hsla(${orb.color},0.18)`);
-        grad.addColorStop(0.5, `hsla(${orb.color},0.07)`);
-        grad.addColorStop(1, `hsla(${orb.color},0)`);
-
+        // Wavy horizontal distortion
         ctx.beginPath();
-        ctx.ellipse(cx, cy, r, r * 0.7, t * 0.3, 0, Math.PI * 2);
+        ctx.moveTo(0, cy - bandH);
+        for (let x = 0; x <= w; x += 8) {
+          const waveY = cy + Math.sin(x * 0.008 + t * band.speed * 800 + band.freq) * 30;
+          ctx.lineTo(x, waveY - bandH * 0.5);
+        }
+        for (let x = w; x >= 0; x -= 8) {
+          const waveY = cy + Math.sin(x * 0.008 + t * band.speed * 800 + band.freq + Math.PI) * 30;
+          ctx.lineTo(x, waveY + bandH * 0.5);
+        }
+        ctx.closePath();
         ctx.fillStyle = grad;
         ctx.fill();
       });
 
-      // Scanline overlay (subtle holographic)
-      for (let y = 0; y < h; y += 4) {
-        ctx.fillStyle = "rgba(0,0,0,0.025)";
+      // Deep green radial glow — bottom left ambient
+      const glowBL = ctx.createRadialGradient(w * 0.1, h * 0.9, 0, w * 0.1, h * 0.9, w * 0.5);
+      glowBL.addColorStop(0, "rgba(0,60,20,0.25)");
+      glowBL.addColorStop(1, "rgba(0,60,20,0)");
+      ctx.fillStyle = glowBL;
+      ctx.fillRect(0, 0, w, h);
+
+      // Subtle emerald glow — top right
+      const glowTR = ctx.createRadialGradient(w * 0.85, h * 0.15, 0, w * 0.85, h * 0.15, w * 0.4);
+      glowTR.addColorStop(0, "rgba(10,80,30,0.18)");
+      glowTR.addColorStop(1, "rgba(10,80,30,0)");
+      ctx.fillStyle = glowTR;
+      ctx.fillRect(0, 0, w, h);
+
+      // Faint horizontal scan texture
+      for (let y = 0; y < h; y += 3) {
+        ctx.fillStyle = "rgba(0,0,0,0.018)";
         ctx.fillRect(0, y, w, 1);
       }
 
-      // Grid lines (very faint)
-      ctx.strokeStyle = "rgba(204,255,0,0.03)";
-      ctx.lineWidth = 1;
-      const gridSize = 80;
-      for (let x = 0; x < w; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
-        ctx.stroke();
-      }
-      for (let y = 0; y < h; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
-
-      t += 0.005;
+      t += 1;
       animId = requestAnimationFrame(draw);
     };
 
