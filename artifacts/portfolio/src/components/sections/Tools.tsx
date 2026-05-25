@@ -14,7 +14,7 @@ export function Tools() {
   ];
 
   return (
-    <section className="py-24 bg-card border-y border-border">
+    <section id="tools" className="py-24 bg-card border-y border-border">
       <div className="container mx-auto px-6 text-center">
         <h2 className="text-3xl font-black uppercase mb-16">The Arsenal</h2>
         

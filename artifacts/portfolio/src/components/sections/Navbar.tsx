@@ -20,6 +20,7 @@ export function Navbar() {
     { name: "About", href: "#about" },
     { name: "Services", href: "#services" },
     { name: "Projects", href: "#projects" },
+    { name: "Tools", href: "#tools" },
     { name: "Contact", href: "#contact" },
   ];
 
