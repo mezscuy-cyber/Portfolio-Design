@@ -3,7 +3,7 @@ import aboutImg from "../../assets/about.png";
 
 export function About() {
   return (
-    <section id="about" className="py-24 relative">
+    <section id="about" className="py-24 relative glass-section">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           

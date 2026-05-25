@@ -10,7 +10,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="border-t border-border bg-card py-12">
+    <footer className="py-12 glass-section">
       <div className="container mx-auto px-6">
         <div className="flex flex-col gap-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">

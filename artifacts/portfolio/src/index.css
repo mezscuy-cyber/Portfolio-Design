@@ -176,3 +176,60 @@
   animation: marquee 25s linear infinite;
   will-change: transform;
 }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── Glass Hologram Card ── */
+.glass-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(204, 255, 0, 0.03) 50%,
+    rgba(0, 102, 255, 0.04) 100%
+  );
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  border: 1px solid rgba(204, 255, 0, 0.12);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 0 0.5px rgba(0, 102, 255, 0.08);
+}
+
+/* Apply glass effect to all section cards */
+.glass-section {
+  background: linear-gradient(
+    160deg,
+    rgba(10, 10, 10, 0.82) 0%,
+    rgba(14, 14, 20, 0.88) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(204, 255, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 102, 255, 0.06);
+}
+
+/* Holographic shimmer line */
+.holo-border {
+  position: relative;
+}
+.holo-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(204, 255, 0, 0.3),
+    rgba(0, 102, 255, 0.2),
+    rgba(204, 255, 0, 0.1)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}

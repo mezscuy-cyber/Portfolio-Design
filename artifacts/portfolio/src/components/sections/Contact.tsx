@@ -40,7 +40,7 @@ export function Contact() {
   ];
 
   return (
-    <section id="contact" className="py-24 relative overflow-hidden">
+    <section id="contact" className="py-24 relative overflow-hidden glass-section">
       <div className="absolute top-0 right-0 w-1/2 h-full bg-secondary/5 blur-[100px] rounded-full -z-10"></div>
 
       <div className="container mx-auto px-6 relative z-10">

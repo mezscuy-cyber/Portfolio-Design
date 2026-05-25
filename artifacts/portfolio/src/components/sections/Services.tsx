@@ -30,7 +30,7 @@ export function Services() {
   ];
 
   return (
-    <section id="services" className="py-24 bg-card relative">
+    <section id="services" className="py-24 relative glass-section">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
           <div>

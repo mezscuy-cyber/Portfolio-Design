@@ -30,7 +30,7 @@ const projects = [
 
 export function Projects() {
   return (
-    <section id="projects" className="py-24 relative">
+    <section id="projects" className="py-24 relative glass-section">
       <div className="container mx-auto px-6">
         <div className="mb-16">
           <div className="text-primary font-bold uppercase tracking-widest text-sm mb-4">Selected Work</div>
