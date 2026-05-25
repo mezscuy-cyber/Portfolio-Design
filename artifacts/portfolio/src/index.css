@@ -185,6 +185,54 @@
   to { transform: rotate(360deg); }
 }
 
+/* ── Glow Hover — edge light + pulse on hover ── */
+.glow-hover {
+  position: relative;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.glow-hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  box-shadow:
+    0 0 0 1px rgba(50, 200, 100, 0.35),
+    0 0 12px 2px rgba(50, 200, 100, 0.18),
+    0 0 30px 6px rgba(50, 200, 100, 0.08);
+  pointer-events: none;
+}
+.glow-hover:hover::after {
+  opacity: 1;
+}
+.glow-hover:hover {
+  border-color: rgba(50, 200, 100, 0.3) !important;
+}
+
+/* Pulse glow keyframe for active / highlighted elements */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(50, 200, 100, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(50, 200, 100, 0.15), 0 0 20px 6px rgba(50, 200, 100, 0.08);
+  }
+}
+.pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+/* ── Smooth scroll for the whole page ── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Responsive container tweaks ── */
+.container {
+  max-width: 1200px;
+}
+
 /* ── Deep Glass Card — dark green tinted ── */
 .glass-card {
   background: linear-gradient(

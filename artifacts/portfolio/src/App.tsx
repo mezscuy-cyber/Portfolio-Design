@@ -19,10 +19,10 @@ function App() {
         {/* Full-page animated background */}
         <AnimatedBackground />
 
-        {/* Glass hologram overlay that covers entire page */}
+        {/* Subtle dark green tint overlay */}
         <div className="fixed inset-0 pointer-events-none z-[1]"
           style={{
-            background: "linear-gradient(135deg, rgba(204,255,0,0.015) 0%, rgba(0,102,255,0.015) 50%, rgba(204,255,0,0.01) 100%)",
+            background: "linear-gradient(160deg, rgba(5,25,12,0.3) 0%, rgba(3,15,8,0.2) 50%, rgba(6,20,10,0.3) 100%)",
           }}
         />
 

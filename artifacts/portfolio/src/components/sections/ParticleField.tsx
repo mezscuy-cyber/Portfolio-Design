@@ -1,21 +1,18 @@
 import { useEffect, useRef } from "react";
 
-interface Star {
+interface Node {
   x: number;
   y: number;
-  vx: number;
-  vy: number;
-  radius: number;
+  baseX: number;
+  baseY: number;
   alpha: number;
-  twinkleSpeed: number;
-  twinklePhase: number;
-  color: string;
+  pulse: number;
+  pulseSpeed: number;
 }
 
 export function ParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -9999, y: -9999 });
-  const starsRef = useRef<Star[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -28,131 +25,132 @@ export function ParticleField() {
     canvas.width = W;
     canvas.height = H;
 
-    // Elegant star colors — dim greens, whites, soft teals
-    const COLORS = [
-      "180,255,200",   // mint white
-      "160,255,160",   // soft green
-      "200,255,220",   // pale green-white
-      "220,255,230",   // near white green
-      "140,220,180",   // muted teal
-    ];
+    const COLS = 9;
+    const ROWS = 12;
+    const gapX = W / (COLS + 1);
+    const gapY = H / (ROWS + 1);
 
-    const spawn = (): Star => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.12,
-      vy: (Math.random() - 0.5) * 0.12,
-      radius: 0.5 + Math.random() * 1.5,
-      alpha: 0.3 + Math.random() * 0.5,
-      twinkleSpeed: 0.008 + Math.random() * 0.02,
-      twinklePhase: Math.random() * Math.PI * 2,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-    });
-
-    starsRef.current = Array.from({ length: 90 }, spawn);
+    const nodes: Node[] = [];
+    for (let r = 1; r <= ROWS; r++) {
+      for (let c = 1; c <= COLS; c++) {
+        const bx = gapX * c;
+        const by = gapY * r;
+        nodes.push({
+          x: bx,
+          y: by,
+          baseX: bx,
+          baseY: by,
+          alpha: 0.15 + Math.random() * 0.35,
+          pulse: Math.random() * Math.PI * 2,
+          pulseSpeed: 0.012 + Math.random() * 0.02,
+        });
+      }
+    }
 
     let animId: number;
     let t = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
-      mouseRef.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
+      mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    };
+    const handleMouseLeave = () => {
+      mouseRef.current = { x: -9999, y: -9999 };
     };
     canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseleave", handleMouseLeave);
 
     const draw = () => {
       ctx.clearRect(0, 0, W, H);
 
       const mx = mouseRef.current.x;
       const my = mouseRef.current.y;
-      const stars = starsRef.current;
 
-      // Draw constellation connections first
-      for (let i = 0; i < stars.length; i++) {
-        for (let j = i + 1; j < stars.length; j++) {
-          const dx = stars[i].x - stars[j].x;
-          const dy = stars[i].y - stars[j].y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 85) {
-            const fade = 1 - d / 85;
+      // Update nodes — subtle float + mouse repulsion
+      nodes.forEach((n) => {
+        n.pulse += n.pulseSpeed;
+        const floatX = Math.sin(t * 0.004 + n.pulse) * 3;
+        const floatY = Math.cos(t * 0.003 + n.pulse * 0.7) * 3;
+
+        const dx = n.baseX + floatX - mx;
+        const dy = n.baseY + floatY - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const repulse = dist < 80 ? (1 - dist / 80) * 18 : 0;
+
+        n.x = n.baseX + floatX + (dist > 0 ? (dx / dist) * repulse : 0);
+        n.y = n.baseY + floatY + (dist > 0 ? (dy / dist) * repulse : 0);
+      });
+
+      // Draw horizontal & vertical grid lines between neighboring nodes
+      ctx.lineWidth = 0.5;
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const idx = r * COLS + c;
+          const n = nodes[idx];
+          const pulse = (Math.sin(n.pulse) + 1) * 0.5;
+
+          // Horizontal line to right neighbor
+          if (c < COLS - 1) {
+            const right = nodes[idx + 1];
+            const dist = Math.hypot(n.x - mx, n.y - my);
+            const glow = dist < 120 ? (1 - dist / 120) * 0.4 : 0;
+            const lineAlpha = 0.06 + pulse * 0.06 + glow;
             ctx.beginPath();
-            ctx.moveTo(stars[i].x, stars[i].y);
-            ctx.lineTo(stars[j].x, stars[j].y);
-            ctx.strokeStyle = `rgba(100,220,140,${fade * 0.12})`;
-            ctx.lineWidth = 0.5;
+            ctx.moveTo(n.x, n.y);
+            ctx.lineTo(right.x, right.y);
+            ctx.strokeStyle = `rgba(60,200,100,${lineAlpha})`;
+            ctx.stroke();
+          }
+          // Vertical line to bottom neighbor
+          if (r < ROWS - 1) {
+            const below = nodes[idx + COLS];
+            const dist = Math.hypot(n.x - mx, n.y - my);
+            const glow = dist < 120 ? (1 - dist / 120) * 0.4 : 0;
+            const lineAlpha = 0.06 + pulse * 0.06 + glow;
+            ctx.beginPath();
+            ctx.moveTo(n.x, n.y);
+            ctx.lineTo(below.x, below.y);
+            ctx.strokeStyle = `rgba(60,200,100,${lineAlpha})`;
             ctx.stroke();
           }
         }
       }
 
-      // Draw stars
-      stars.forEach((star) => {
-        // Gentle drift
-        star.x += star.vx;
-        star.y += star.vy;
-
-        // Wrap
-        if (star.x < 0) star.x = W;
-        if (star.x > W) star.x = 0;
-        if (star.y < 0) star.y = H;
-        if (star.y > H) star.y = 0;
-
-        // Subtle mouse repulsion — gentle push away
-        const dx = star.x - mx;
-        const dy = star.y - my;
+      // Draw corner squares at each node
+      nodes.forEach((n) => {
+        const dx = n.x - mx;
+        const dy = n.y - my;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 100 && dist > 0) {
-          const force = (1 - dist / 100) * 0.04;
-          star.vx += (dx / dist) * force;
-          star.vy += (dy / dist) * force;
+        const proximity = dist < 100 ? (1 - dist / 100) : 0;
+        const pulse = (Math.sin(n.pulse) + 1) * 0.5;
+        const alpha = n.alpha * (0.5 + pulse * 0.5) + proximity * 0.6;
+        const size = 2 + proximity * 3;
+
+        // Outer square
+        ctx.strokeStyle = `rgba(80,210,120,${alpha})`;
+        ctx.lineWidth = 0.8;
+        ctx.strokeRect(n.x - size, n.y - size, size * 2, size * 2);
+
+        // Inner dot on bright nodes
+        if (proximity > 0.3 || pulse > 0.7) {
+          ctx.fillStyle = `rgba(140,255,160,${alpha * 0.8})`;
+          ctx.fillRect(n.x - 1, n.y - 1, 2, 2);
         }
-
-        // Speed clamp
-        const speed = Math.sqrt(star.vx * star.vx + star.vy * star.vy);
-        if (speed > 0.5) {
-          star.vx = (star.vx / speed) * 0.5;
-          star.vy = (star.vy / speed) * 0.5;
-        }
-
-        // Damping back to base drift
-        star.vx = star.vx * 0.98 + (Math.random() - 0.5) * 0.002;
-        star.vy = star.vy * 0.98 + (Math.random() - 0.5) * 0.002;
-
-        // Twinkling alpha
-        const twinkle = star.alpha * (0.6 + 0.4 * Math.sin(t * star.twinkleSpeed + star.twinklePhase));
-
-        // Soft glow halo
-        const glow = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.radius * 5);
-        glow.addColorStop(0, `rgba(${star.color},${twinkle * 0.6})`);
-        glow.addColorStop(1, `rgba(${star.color},0)`);
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius * 5, 0, Math.PI * 2);
-        ctx.fillStyle = glow;
-        ctx.fill();
-
-        // Core star dot
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${star.color},${twinkle})`;
-        ctx.fill();
       });
 
-      // Mouse cursor halo — ethereal green ring
-      if (mx > 0 && mx < W && my > 0 && my < H) {
-        const halo = ctx.createRadialGradient(mx, my, 0, mx, my, 60);
-        halo.addColorStop(0, "rgba(100,220,140,0.06)");
-        halo.addColorStop(0.6, "rgba(100,220,140,0.02)");
-        halo.addColorStop(1, "rgba(100,220,140,0)");
+      // Mouse cursor glow ring
+      if (mx > 0 && mx < W) {
+        const halo = ctx.createRadialGradient(mx, my, 0, mx, my, 70);
+        halo.addColorStop(0, "rgba(60,200,100,0.08)");
+        halo.addColorStop(0.5, "rgba(60,200,100,0.03)");
+        halo.addColorStop(1, "rgba(60,200,100,0)");
         ctx.beginPath();
-        ctx.arc(mx, my, 60, 0, Math.PI * 2);
+        ctx.arc(mx, my, 70, 0, Math.PI * 2);
         ctx.fillStyle = halo;
         ctx.fill();
       }
 
-      t += 1;
+      t++;
       animId = requestAnimationFrame(draw);
     };
 
@@ -160,6 +158,7 @@ export function ParticleField() {
     return () => {
       cancelAnimationFrame(animId);
       canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, []);
 
