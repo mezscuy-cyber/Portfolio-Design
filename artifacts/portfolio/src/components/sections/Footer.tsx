@@ -19,7 +19,7 @@ export function Footer() {
               data-testid="link-footer-logo"
               className="text-3xl font-black tracking-tighter text-foreground uppercase flex items-center gap-1 hover:text-primary transition-colors"
             >
-              <span className="text-primary">X</span>ENO.
+              <span className="text-primary">L</span>UKMAN.
             </button>
 
             <nav className="flex flex-wrap gap-x-8 gap-y-3">
@@ -81,14 +81,14 @@ export function Footer() {
 
           <div className="border-t border-border/50 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              &copy; {new Date().getFullYear()} Xeno Dev. All Rights Reserved.
+              &copy; {new Date().getFullYear()} Lukman Dev. All Rights Reserved.
             </div>
             <a
               href={SOCIAL_LINKS.email}
               data-testid="link-footer-email"
               className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
-              hello@xeno.dev
+              lukmanugrahaaa@gmail.com
             </a>
           </div>
         </div>
