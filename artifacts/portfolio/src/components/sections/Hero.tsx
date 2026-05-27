@@ -35,7 +35,7 @@ export function Hero() {
           >
             <motion.div variants={item} className="flex items-center gap-3 mb-5">
               <div className="h-px w-10 bg-primary" />
-              <span className="text-primary font-bold uppercase tracking-widest text-xs">Portfolio 2025</span>
+              <span className="text-primary font-bold uppercase tracking-widest text-xs">Portfolio 2026</span>
             </motion.div>
 
             <motion.h1
