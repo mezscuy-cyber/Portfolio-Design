@@ -71,7 +71,7 @@ export function Contact() {
                     data-testid="link-contact-email"
                     className="text-lg font-bold hover:text-primary transition-colors"
                   >
-                    hello@xeno.dev
+                    lukmanugrahaaa@gmail.com
                   </a>
                 </div>
               </div>
