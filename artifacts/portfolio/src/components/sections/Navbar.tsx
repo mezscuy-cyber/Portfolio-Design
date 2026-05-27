@@ -50,7 +50,7 @@ export function Navbar() {
             onClick={() => scrollTo("#home")}
             className="text-xl sm:text-2xl font-black tracking-tighter text-foreground uppercase flex items-center gap-1 z-50 relative glow-hover"
           >
-            <span className="text-primary">X</span>ENO.
+            <span className="text-primary">L</span>UKMAN.
           </button>
 
           {/* Desktop nav */}
