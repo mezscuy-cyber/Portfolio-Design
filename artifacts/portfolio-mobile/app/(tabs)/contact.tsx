@@ -21,6 +21,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SOCIAL_LINKS } from "@/constants/data";
+import { F } from "@/constants/fonts";
 import { useColors } from "@/hooks/useColors";
 import { FocusFadeView } from "@/components/FocusFadeView";
 
@@ -300,6 +301,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     sectionLabel: {
       fontSize: 11,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       letterSpacing: 3,
       color: colors.primary,
       marginBottom: 6,
@@ -307,6 +309,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     sectionTitle: {
       fontSize: 36,
       fontWeight: "700" as const,
+      fontFamily: F[700],
       color: colors.foreground,
       letterSpacing: -0.5,
     },
@@ -321,6 +324,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     fieldLabel: {
       fontSize: 13,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       color: colors.foreground,
       letterSpacing: 0.3,
     },
@@ -332,6 +336,7 @@ function styles(colors: ReturnType<typeof useColors>) {
       paddingHorizontal: 16,
       paddingVertical: 14,
       fontSize: 15,
+      fontFamily: F[400],
       color: colors.foreground,
     },
     textarea: {
@@ -354,6 +359,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     sendBtnText: {
       fontSize: 16,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       color: colors.primaryForeground,
     },
     divider: {
@@ -368,6 +374,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     socialTitle: {
       fontSize: 13,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       color: colors.mutedForeground,
       letterSpacing: 1,
       marginBottom: 16,
@@ -398,6 +405,7 @@ function styles(colors: ReturnType<typeof useColors>) {
       flex: 1,
       fontSize: 15,
       fontWeight: "500" as const,
+      fontFamily: F[500],
       color: colors.foreground,
     },
   });

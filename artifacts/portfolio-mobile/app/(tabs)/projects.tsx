@@ -25,6 +25,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PROJECTS } from "@/constants/data";
+import { F } from "@/constants/fonts";
 import { useColors } from "@/hooks/useColors";
 import { FocusFadeView } from "@/components/FocusFadeView";
 
@@ -200,6 +201,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     sectionLabel: {
       fontSize: 11,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       letterSpacing: 3,
       color: colors.primary,
       marginBottom: 6,
@@ -207,6 +209,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     sectionTitle: {
       fontSize: 36,
       fontWeight: "700" as const,
+      fontFamily: F[700],
       color: colors.foreground,
       letterSpacing: -0.5,
     },
@@ -232,6 +235,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     cardCategory: {
       fontSize: 11,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       letterSpacing: 2,
       color: colors.primary,
       marginBottom: 6,
@@ -239,11 +243,13 @@ function styles(colors: ReturnType<typeof useColors>) {
     cardTitle: {
       fontSize: 22,
       fontWeight: "700" as const,
+      fontFamily: F[700],
       color: colors.foreground,
       marginBottom: 8,
     },
     cardDesc: {
       fontSize: 14,
+      fontFamily: F[400],
       lineHeight: 22,
       color: colors.mutedForeground,
       marginBottom: 16,
@@ -265,6 +271,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     tagText: {
       fontSize: 12,
       fontWeight: "500" as const,
+      fontFamily: F[500],
       color: colors.mutedForeground,
     },
     viewBtn: {
@@ -275,6 +282,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     viewBtnText: {
       fontSize: 14,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       color: colors.primary,
     },
   });

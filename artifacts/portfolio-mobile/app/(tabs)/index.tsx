@@ -21,6 +21,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SOCIAL_LINKS, STATS } from "@/constants/data";
+import { F } from "@/constants/fonts";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useColors } from "@/hooks/useColors";
 import { FocusFadeView } from "@/components/FocusFadeView";
@@ -245,6 +246,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     logoText: {
       fontSize: 13,
       fontWeight: "700" as const,
+      fontFamily: F[700],
       letterSpacing: 3,
       color: colors.primary,
     },
@@ -274,6 +276,7 @@ function styles(colors: ReturnType<typeof useColors>) {
       fontSize: 12,
       color: colors.mutedForeground,
       fontWeight: "500" as const,
+      fontFamily: F[500],
     },
     themeToggle: {
       width: 36,
@@ -301,6 +304,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     heroName: {
       fontSize: 48,
       fontWeight: "700" as const,
+      fontFamily: F[700],
       color: colors.foreground,
       letterSpacing: -1,
       textAlign: "center",
@@ -308,6 +312,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     heroTitle: {
       fontSize: 13,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       letterSpacing: 4,
       color: colors.primary,
       marginTop: 4,
@@ -315,6 +320,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     },
     heroBio: {
       fontSize: 15,
+      fontFamily: F[400],
       lineHeight: 24,
       color: colors.mutedForeground,
       textAlign: "center",
@@ -342,12 +348,14 @@ function styles(colors: ReturnType<typeof useColors>) {
     statValue: {
       fontSize: 26,
       fontWeight: "700" as const,
+      fontFamily: F[700],
       color: colors.primary,
     },
     statLabel: {
       fontSize: 11,
       color: colors.mutedForeground,
       fontWeight: "500" as const,
+      fontFamily: F[500],
       letterSpacing: 1,
       marginTop: 2,
     },
@@ -385,6 +393,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     hireBtnText: {
       fontSize: 15,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       color: colors.primaryForeground,
     },
     ghostBtn: {
@@ -402,6 +411,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     ghostBtnText: {
       fontSize: 15,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       color: colors.foreground,
     },
     pressed: {

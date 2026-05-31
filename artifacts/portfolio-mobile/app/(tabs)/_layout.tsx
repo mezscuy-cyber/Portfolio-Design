@@ -7,6 +7,7 @@ import { Feather } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, View, useColorScheme } from "react-native";
 
+import { F } from "@/constants/fonts";
 import { useColors } from "@/hooks/useColors";
 
 function NativeTabLayout() {
@@ -71,6 +72,7 @@ function ClassicTabLayout() {
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: "500",
+          fontFamily: F[500],
         },
       }}
     >

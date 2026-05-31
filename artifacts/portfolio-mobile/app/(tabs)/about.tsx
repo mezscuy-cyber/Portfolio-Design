@@ -25,6 +25,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { CV_URL, SERVICES, TOOLS } from "@/constants/data";
+import { F } from "@/constants/fonts";
 import { useColors } from "@/hooks/useColors";
 import { FocusFadeView } from "@/components/FocusFadeView";
 
@@ -280,6 +281,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     sectionLabel: {
       fontSize: 11,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       letterSpacing: 3,
       color: colors.primary,
       marginBottom: 6,
@@ -287,6 +289,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     sectionTitle: {
       fontSize: 36,
       fontWeight: "700" as const,
+      fontFamily: F[700],
       color: colors.foreground,
       letterSpacing: -0.5,
     },
@@ -298,6 +301,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     bio: {
       paddingHorizontal: 24,
       fontSize: 15,
+      fontFamily: F[400],
       lineHeight: 26,
       color: colors.mutedForeground,
       marginBottom: 20,
@@ -316,6 +320,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     cvBtnText: {
       fontSize: 15,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       color: colors.primaryForeground,
     },
     divider: {
@@ -331,6 +336,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     blockLabel: {
       fontSize: 11,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       letterSpacing: 3,
       color: colors.primary,
       marginBottom: 6,
@@ -338,6 +344,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     blockTitle: {
       fontSize: 28,
       fontWeight: "700" as const,
+      fontFamily: F[700],
       color: colors.foreground,
       marginBottom: 20,
       letterSpacing: -0.5,
@@ -364,11 +371,13 @@ function styles(colors: ReturnType<typeof useColors>) {
     serviceTitle: {
       fontSize: 16,
       fontWeight: "700" as const,
+      fontFamily: F[700],
       color: colors.foreground,
       marginBottom: 6,
     },
     serviceDesc: {
       fontSize: 14,
+      fontFamily: F[400],
       lineHeight: 21,
       color: colors.mutedForeground,
     },
@@ -388,6 +397,7 @@ function styles(colors: ReturnType<typeof useColors>) {
     toolText: {
       fontSize: 14,
       fontWeight: "600" as const,
+      fontFamily: F[600],
       color: colors.foreground,
     },
   });
