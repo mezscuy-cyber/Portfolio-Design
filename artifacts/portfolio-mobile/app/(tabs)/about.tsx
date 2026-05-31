@@ -1,8 +1,11 @@
 import { Feather } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import * as Linking from "expo-linking";
 import React from "react";
 import {
   Image,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,7 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { SERVICES, TOOLS } from "@/constants/data";
+import { CV_URL, SERVICES, TOOLS } from "@/constants/data";
 import { useColors } from "@/hooks/useColors";
 
 export default function AboutScreen() {
@@ -19,6 +22,11 @@ export default function AboutScreen() {
 
   const topPad = Platform.OS === "web" ? 67 : insets.top + 16;
   const bottomPad = Platform.OS === "web" ? 34 + 84 : insets.bottom + 84;
+
+  async function handleDownloadCV() {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Linking.openURL(CV_URL);
+  }
 
   const s = styles(colors);
 
@@ -47,6 +55,15 @@ export default function AboutScreen() {
         believe the best software is invisible — it gets out of the way and lets
         people do what they came to do.
       </Text>
+
+      <Pressable
+        style={({ pressed }) => [s.cvBtn, pressed && s.pressed]}
+        onPress={handleDownloadCV}
+        testID="download-cv-btn"
+      >
+        <Feather name="download" size={18} color={colors.primaryForeground} />
+        <Text style={s.cvBtnText}>Download CV</Text>
+      </Pressable>
 
       <View style={s.divider} />
 
@@ -116,7 +133,23 @@ function styles(colors: ReturnType<typeof useColors>) {
       fontSize: 15,
       lineHeight: 26,
       color: colors.mutedForeground,
+      marginBottom: 20,
+    },
+    cvBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 10,
+      backgroundColor: colors.primary,
+      marginHorizontal: 24,
+      paddingVertical: 14,
+      borderRadius: colors.radius,
       marginBottom: 32,
+    },
+    cvBtnText: {
+      fontSize: 15,
+      fontWeight: "600" as const,
+      color: colors.primaryForeground,
     },
     divider: {
       height: 1,
@@ -189,6 +222,9 @@ function styles(colors: ReturnType<typeof useColors>) {
       fontSize: 14,
       fontWeight: "600" as const,
       color: colors.foreground,
+    },
+    pressed: {
+      opacity: 0.7,
     },
   });
 }

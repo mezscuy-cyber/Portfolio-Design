@@ -1,3 +1,5 @@
+export const CV_URL = "https://xeno.dev/resume.pdf";
+
 export const SOCIAL_LINKS = {
   github: "https://github.com/xenodev",
   linkedin: "https://linkedin.com/in/xenodev",

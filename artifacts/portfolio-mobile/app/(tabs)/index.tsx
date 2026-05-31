@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SOCIAL_LINKS, STATS } from "@/constants/data";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useColors } from "@/hooks/useColors";
 
 const SOCIAL_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
@@ -25,10 +26,10 @@ const SOCIAL_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
 
 export default function HomeScreen() {
   const colors = useColors();
+  const { isDark, toggleTheme } = useTheme();
   const insets = useSafeAreaInsets();
 
-  const topPad =
-    Platform.OS === "web" ? 67 : insets.top + 16;
+  const topPad = Platform.OS === "web" ? 67 : insets.top + 16;
   const bottomPad = Platform.OS === "web" ? 34 + 84 : insets.bottom + 84;
 
   async function handleSocial(url: string) {
@@ -41,6 +42,11 @@ export default function HomeScreen() {
     Linking.openURL(SOCIAL_LINKS.email);
   }
 
+  async function handleToggleTheme() {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    toggleTheme();
+  }
+
   const s = styles(colors);
 
   return (
@@ -51,9 +57,22 @@ export default function HomeScreen() {
     >
       <View style={s.header}>
         <Text style={s.logoText}>XENODEV</Text>
-        <View style={s.availableBadge}>
-          <View style={s.availableDot} />
-          <Text style={s.availableText}>Available</Text>
+        <View style={s.headerRight}>
+          <View style={s.availableBadge}>
+            <View style={s.availableDot} />
+            <Text style={s.availableText}>Available</Text>
+          </View>
+          <Pressable
+            style={({ pressed }) => [s.themeToggle, pressed && s.pressed]}
+            onPress={handleToggleTheme}
+            testID="theme-toggle"
+          >
+            <Feather
+              name={isDark ? "sun" : "moon"}
+              size={18}
+              color={colors.mutedForeground}
+            />
+          </Pressable>
         </View>
       </View>
 
@@ -73,7 +92,10 @@ export default function HomeScreen() {
 
       <View style={s.statsRow}>
         {STATS.map((stat, i) => (
-          <View key={stat.label} style={[s.statItem, i < STATS.length - 1 && s.statBorder]}>
+          <View
+            key={stat.label}
+            style={[s.statItem, i < STATS.length - 1 && s.statBorder]}
+          >
             <Text style={s.statValue}>{stat.value}</Text>
             <Text style={s.statLabel}>{stat.label}</Text>
           </View>
@@ -85,7 +107,9 @@ export default function HomeScreen() {
           <Pressable
             key={key}
             style={({ pressed }) => [s.socialBtn, pressed && s.pressed]}
-            onPress={() => handleSocial(SOCIAL_LINKS[key as keyof typeof SOCIAL_LINKS])}
+            onPress={() =>
+              handleSocial(SOCIAL_LINKS[key as keyof typeof SOCIAL_LINKS])
+            }
             testID={`social-${key}`}
           >
             <Feather name={icon} size={20} color={colors.mutedForeground} />
@@ -100,7 +124,11 @@ export default function HomeScreen() {
           testID="hire-btn"
         >
           <Text style={s.hireBtnText}>Hire Me</Text>
-          <Feather name="arrow-right" size={18} color={colors.primaryForeground} />
+          <Feather
+            name="arrow-right"
+            size={18}
+            color={colors.primaryForeground}
+          />
         </Pressable>
         <Pressable
           style={({ pressed }) => [s.ghostBtn, pressed && s.pressed]}
@@ -130,6 +158,11 @@ function styles(colors: ReturnType<typeof useColors>) {
       letterSpacing: 3,
       color: colors.primary,
     },
+    headerRight: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+    },
     availableBadge: {
       flexDirection: "row",
       alignItems: "center",
@@ -151,6 +184,16 @@ function styles(colors: ReturnType<typeof useColors>) {
       fontSize: 12,
       color: colors.mutedForeground,
       fontWeight: "500" as const,
+    },
+    themeToggle: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: colors.secondary,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: "center",
+      justifyContent: "center",
     },
     heroSection: {
       alignItems: "center",
