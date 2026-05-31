@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import * as Linking from "expo-linking";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Image,
   Platform,
@@ -11,11 +11,19 @@ import {
   Text,
   View,
 } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SOCIAL_LINKS, STATS } from "@/constants/data";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useColors } from "@/hooks/useColors";
+import { FocusFadeView } from "@/components/FocusFadeView";
 
 const SOCIAL_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   github: "github",
@@ -23,6 +31,73 @@ const SOCIAL_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   twitter: "twitter",
   instagram: "instagram",
 };
+
+function useFadeSlideIn(delay = 0) {
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(24);
+
+  useEffect(() => {
+    opacity.value = withDelay(delay, withTiming(1, { duration: 500 }));
+    translateY.value = withDelay(delay, withSpring(0, { damping: 18, stiffness: 120 }));
+  }, []);
+
+  return useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }],
+  }));
+}
+
+function useFadeScaleIn(delay = 0) {
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.82);
+
+  useEffect(() => {
+    opacity.value = withDelay(delay, withTiming(1, { duration: 500 }));
+    scale.value = withDelay(delay, withSpring(1, { damping: 16, stiffness: 130 }));
+  }, []);
+
+  return useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ scale: scale.value }],
+  }));
+}
+
+function ScalePressable({
+  style,
+  onPress,
+  testID,
+  children,
+}: {
+  style: object;
+  onPress: () => void;
+  testID?: string;
+  children: React.ReactNode;
+}) {
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Pressable
+      testID={testID}
+      onPressIn={() => {
+        scale.value = withSpring(0.95, { damping: 15, stiffness: 300 });
+        opacity.value = withTiming(0.8, { duration: 80 });
+      }}
+      onPressOut={() => {
+        scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+        opacity.value = withTiming(1, { duration: 120 });
+      }}
+      onPress={onPress}
+    >
+      <Animated.View style={[style, animStyle]}>{children}</Animated.View>
+    </Pressable>
+  );
+}
 
 export default function HomeScreen() {
   const colors = useColors();
@@ -47,99 +122,114 @@ export default function HomeScreen() {
     toggleTheme();
   }
 
+  const headerAnim = useFadeSlideIn(0);
+  const avatarAnim = useFadeScaleIn(120);
+  const nameAnim = useFadeSlideIn(220);
+  const titleAnim = useFadeSlideIn(320);
+  const bioAnim = useFadeSlideIn(400);
+  const statsAnim = useFadeSlideIn(480);
+  const socialAnim = useFadeSlideIn(560);
+  const ctaAnim = useFadeSlideIn(640);
+
   const s = styles(colors);
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={{ paddingTop: topPad, paddingBottom: bottomPad }}
-      showsVerticalScrollIndicator={false}
-    >
-      <View style={s.header}>
-        <Text style={s.logoText}>XENODEV</Text>
-        <View style={s.headerRight}>
-          <View style={s.availableBadge}>
-            <View style={s.availableDot} />
-            <Text style={s.availableText}>Available</Text>
+    <FocusFadeView>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: colors.background }}
+        contentContainerStyle={{ paddingTop: topPad, paddingBottom: bottomPad }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animated.View style={[s.header, headerAnim]}>
+          <Text style={s.logoText}>XENODEV</Text>
+          <View style={s.headerRight}>
+            <View style={s.availableBadge}>
+              <View style={s.availableDot} />
+              <Text style={s.availableText}>Available</Text>
+            </View>
+            <Pressable
+              style={({ pressed }) => [s.themeToggle, pressed && s.pressed]}
+              onPress={handleToggleTheme}
+              testID="theme-toggle"
+            >
+              <Feather
+                name={isDark ? "sun" : "moon"}
+                size={18}
+                color={colors.mutedForeground}
+              />
+            </Pressable>
           </View>
-          <Pressable
-            style={({ pressed }) => [s.themeToggle, pressed && s.pressed]}
-            onPress={handleToggleTheme}
-            testID="theme-toggle"
-          >
-            <Feather
-              name={isDark ? "sun" : "moon"}
-              size={18}
-              color={colors.mutedForeground}
+        </Animated.View>
+
+        <View style={s.heroSection}>
+          <Animated.View style={avatarAnim}>
+            <Image
+              source={require("@/assets/images/profile.png")}
+              style={s.profileImage}
+              resizeMode="cover"
             />
-          </Pressable>
+          </Animated.View>
+          <Animated.Text style={[s.heroName, nameAnim]}>LUKMAN.</Animated.Text>
+          <Animated.Text style={[s.heroTitle, titleAnim]}>
+            CREATIVE DEVELOPER
+          </Animated.Text>
+          <Animated.Text style={[s.heroBio, bioAnim]}>
+            I craft immersive digital experiences that merge bold design with
+            precise engineering. From concept to deployment, every pixel matters.
+          </Animated.Text>
         </View>
-      </View>
 
-      <View style={s.heroSection}>
-        <Image
-          source={require("@/assets/images/profile.png")}
-          style={s.profileImage}
-          resizeMode="cover"
-        />
-        <Text style={s.heroName}>LUKMAN.</Text>
-        <Text style={s.heroTitle}>CREATIVE DEVELOPER</Text>
-        <Text style={s.heroBio}>
-          I craft immersive digital experiences that merge bold design with
-          precise engineering. From concept to deployment, every pixel matters.
-        </Text>
-      </View>
+        <Animated.View style={[s.statsRow, statsAnim]}>
+          {STATS.map((stat, i) => (
+            <View
+              key={stat.label}
+              style={[s.statItem, i < STATS.length - 1 && s.statBorder]}
+            >
+              <Text style={s.statValue}>{stat.value}</Text>
+              <Text style={s.statLabel}>{stat.label}</Text>
+            </View>
+          ))}
+        </Animated.View>
 
-      <View style={s.statsRow}>
-        {STATS.map((stat, i) => (
-          <View
-            key={stat.label}
-            style={[s.statItem, i < STATS.length - 1 && s.statBorder]}
+        <Animated.View style={[s.socialRow, socialAnim]}>
+          {Object.entries(SOCIAL_ICONS).map(([key, icon]) => (
+            <ScalePressable
+              key={key}
+              style={s.socialBtn}
+              onPress={() =>
+                handleSocial(SOCIAL_LINKS[key as keyof typeof SOCIAL_LINKS])
+              }
+              testID={`social-${key}`}
+            >
+              <Feather name={icon} size={20} color={colors.mutedForeground} />
+            </ScalePressable>
+          ))}
+        </Animated.View>
+
+        <Animated.View style={[s.ctaRow, ctaAnim]}>
+          <ScalePressable
+            style={s.hireBtn}
+            onPress={handleHire}
+            testID="hire-btn"
           >
-            <Text style={s.statValue}>{stat.value}</Text>
-            <Text style={s.statLabel}>{stat.label}</Text>
-          </View>
-        ))}
-      </View>
-
-      <View style={s.socialRow}>
-        {Object.entries(SOCIAL_ICONS).map(([key, icon]) => (
-          <Pressable
-            key={key}
-            style={({ pressed }) => [s.socialBtn, pressed && s.pressed]}
-            onPress={() =>
-              handleSocial(SOCIAL_LINKS[key as keyof typeof SOCIAL_LINKS])
-            }
-            testID={`social-${key}`}
+            <Text style={s.hireBtnText}>Hire Me</Text>
+            <Feather
+              name="arrow-right"
+              size={18}
+              color={colors.primaryForeground}
+            />
+          </ScalePressable>
+          <ScalePressable
+            style={s.ghostBtn}
+            onPress={() => handleSocial(SOCIAL_LINKS.github)}
+            testID="github-btn"
           >
-            <Feather name={icon} size={20} color={colors.mutedForeground} />
-          </Pressable>
-        ))}
-      </View>
-
-      <View style={s.ctaRow}>
-        <Pressable
-          style={({ pressed }) => [s.hireBtn, pressed && s.pressed]}
-          onPress={handleHire}
-          testID="hire-btn"
-        >
-          <Text style={s.hireBtnText}>Hire Me</Text>
-          <Feather
-            name="arrow-right"
-            size={18}
-            color={colors.primaryForeground}
-          />
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [s.ghostBtn, pressed && s.pressed]}
-          onPress={() => handleSocial(SOCIAL_LINKS.github)}
-          testID="github-btn"
-        >
-          <Feather name="github" size={18} color={colors.foreground} />
-          <Text style={s.ghostBtnText}>View Work</Text>
-        </Pressable>
-      </View>
-    </ScrollView>
+            <Feather name="github" size={18} color={colors.foreground} />
+            <Text style={s.ghostBtnText}>View Work</Text>
+          </ScalePressable>
+        </Animated.View>
+      </ScrollView>
+    </FocusFadeView>
   );
 }
 

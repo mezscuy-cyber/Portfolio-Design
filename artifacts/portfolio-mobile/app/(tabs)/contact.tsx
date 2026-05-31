@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import * as Linking from "expo-linking";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Platform,
   Pressable,
@@ -11,10 +11,18 @@ import {
   TextInput,
   View,
 } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SOCIAL_LINKS } from "@/constants/data";
 import { useColors } from "@/hooks/useColors";
+import { FocusFadeView } from "@/components/FocusFadeView";
 
 interface SocialEntry {
   key: keyof typeof SOCIAL_LINKS;
@@ -28,6 +36,111 @@ const SOCIAL_ENTRIES: SocialEntry[] = [
   { key: "twitter", icon: "twitter", label: "Twitter" },
   { key: "instagram", icon: "instagram", label: "Instagram" },
 ];
+
+function useFadeSlideIn(delay = 0) {
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(24);
+
+  useEffect(() => {
+    opacity.value = withDelay(delay, withTiming(1, { duration: 480 }));
+    translateY.value = withDelay(delay, withSpring(0, { damping: 18, stiffness: 115 }));
+  }, []);
+
+  return useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }],
+  }));
+}
+
+function ScalePressable({
+  style,
+  onPress,
+  disabled,
+  testID,
+  children,
+}: {
+  style: object | object[];
+  onPress: () => void;
+  disabled?: boolean;
+  testID?: string;
+  children: React.ReactNode;
+}) {
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Pressable
+      testID={testID}
+      disabled={disabled}
+      onPressIn={() => {
+        if (disabled) return;
+        scale.value = withSpring(0.96, { damping: 15, stiffness: 300 });
+        opacity.value = withTiming(0.8, { duration: 80 });
+      }}
+      onPressOut={() => {
+        scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+        opacity.value = withTiming(1, { duration: 120 });
+      }}
+      onPress={onPress}
+    >
+      <Animated.View style={[...(Array.isArray(style) ? style : [style]), animStyle]}>
+        {children}
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+function AnimatedSocialItem({
+  index,
+  style,
+  onPress,
+  testID,
+  children,
+}: {
+  index: number;
+  style: object;
+  onPress: () => void;
+  testID?: string;
+  children: React.ReactNode;
+}) {
+  const delay = 380 + index * 60;
+  const opacity = useSharedValue(0);
+  const translateX = useSharedValue(-16);
+  const scale = useSharedValue(1);
+  const pressOpacity = useSharedValue(1);
+
+  useEffect(() => {
+    opacity.value = withDelay(delay, withTiming(1, { duration: 400 }));
+    translateX.value = withDelay(delay, withSpring(0, { damping: 18, stiffness: 120 }));
+  }, []);
+
+  const animStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value * pressOpacity.value,
+    transform: [{ translateX: translateX.value }, { scale: scale.value }],
+  }));
+
+  return (
+    <Pressable
+      testID={testID}
+      onPressIn={() => {
+        scale.value = withSpring(0.97, { damping: 15, stiffness: 300 });
+        pressOpacity.value = withTiming(0.8, { duration: 80 });
+      }}
+      onPressOut={() => {
+        scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+        pressOpacity.value = withTiming(1, { duration: 120 });
+      }}
+      onPress={onPress}
+    >
+      <Animated.View style={[style, animStyle]}>{children}</Animated.View>
+    </Pressable>
+  );
+}
 
 export default function ContactScreen() {
   const colors = useColors();
@@ -58,110 +171,123 @@ export default function ContactScreen() {
     Linking.openURL(url);
   }
 
+  const headerAnim = useFadeSlideIn(0);
+  const formAnim = useFadeSlideIn(100);
+  const dividerAnim = useFadeSlideIn(260);
+  const socialTitleAnim = useFadeSlideIn(320);
+
   const s = styles(colors);
-  const canSend = name.trim().length > 0 && email.trim().length > 0 && message.trim().length > 0;
+  const canSend =
+    name.trim().length > 0 &&
+    email.trim().length > 0 &&
+    message.trim().length > 0;
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={{ paddingTop: topPad, paddingBottom: bottomPad }}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-    >
-      <View style={s.sectionHeader}>
-        <Text style={s.sectionLabel}>GET IN TOUCH</Text>
-        <Text style={s.sectionTitle}>Let's Build{"\n"}Something Insane.</Text>
-      </View>
+    <FocusFadeView>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: colors.background }}
+        contentContainerStyle={{ paddingTop: topPad, paddingBottom: bottomPad }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Animated.View style={[s.sectionHeader, headerAnim]}>
+          <Text style={s.sectionLabel}>GET IN TOUCH</Text>
+          <Text style={s.sectionTitle}>Let's Build{"\n"}Something Insane.</Text>
+        </Animated.View>
 
-      <View style={s.form}>
-        <View style={s.field}>
-          <Text style={s.fieldLabel}>Name</Text>
-          <TextInput
-            style={s.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Your name"
-            placeholderTextColor={colors.mutedForeground}
-            autoCapitalize="words"
-            testID="input-name"
-          />
+        <Animated.View style={[s.form, formAnim]}>
+          <View style={s.field}>
+            <Text style={s.fieldLabel}>Name</Text>
+            <TextInput
+              style={s.input}
+              value={name}
+              onChangeText={setName}
+              placeholder="Your name"
+              placeholderTextColor={colors.mutedForeground}
+              autoCapitalize="words"
+              testID="input-name"
+            />
+          </View>
+
+          <View style={s.field}>
+            <Text style={s.fieldLabel}>Email</Text>
+            <TextInput
+              style={s.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="your@email.com"
+              placeholderTextColor={colors.mutedForeground}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              testID="input-email"
+            />
+          </View>
+
+          <View style={s.field}>
+            <Text style={s.fieldLabel}>Message</Text>
+            <TextInput
+              style={[s.input, s.textarea]}
+              value={message}
+              onChangeText={setMessage}
+              placeholder="Tell me about your project..."
+              placeholderTextColor={colors.mutedForeground}
+              multiline
+              numberOfLines={5}
+              textAlignVertical="top"
+              testID="input-message"
+            />
+          </View>
+
+          <ScalePressable
+            style={[s.sendBtn, !canSend && s.sendBtnDisabled]}
+            onPress={handleSend}
+            disabled={!canSend}
+            testID="send-btn"
+          >
+            {sent ? (
+              <>
+                <Feather name="check" size={18} color={colors.primaryForeground} />
+                <Text style={s.sendBtnText}>Sent!</Text>
+              </>
+            ) : (
+              <>
+                <Text style={s.sendBtnText}>Send Message</Text>
+                <Feather name="send" size={18} color={colors.primaryForeground} />
+              </>
+            )}
+          </ScalePressable>
+        </Animated.View>
+
+        <Animated.View style={[s.divider, dividerAnim]} />
+
+        <View style={s.socialSection}>
+          <Animated.Text style={[s.socialTitle, socialTitleAnim]}>
+            Or find me on
+          </Animated.Text>
+          <View style={s.socialList}>
+            {SOCIAL_ENTRIES.map((entry, index) => (
+              <AnimatedSocialItem
+                key={entry.key}
+                index={index}
+                style={s.socialItem}
+                onPress={() => handleSocial(SOCIAL_LINKS[entry.key])}
+                testID={`contact-social-${entry.key}`}
+              >
+                <View style={s.socialIcon}>
+                  <Feather name={entry.icon} size={20} color={colors.primary} />
+                </View>
+                <Text style={s.socialLabel}>{entry.label}</Text>
+                <Feather
+                  name="chevron-right"
+                  size={18}
+                  color={colors.mutedForeground}
+                />
+              </AnimatedSocialItem>
+            ))}
+          </View>
         </View>
-
-        <View style={s.field}>
-          <Text style={s.fieldLabel}>Email</Text>
-          <TextInput
-            style={s.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="your@email.com"
-            placeholderTextColor={colors.mutedForeground}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            testID="input-email"
-          />
-        </View>
-
-        <View style={s.field}>
-          <Text style={s.fieldLabel}>Message</Text>
-          <TextInput
-            style={[s.input, s.textarea]}
-            value={message}
-            onChangeText={setMessage}
-            placeholder="Tell me about your project..."
-            placeholderTextColor={colors.mutedForeground}
-            multiline
-            numberOfLines={5}
-            textAlignVertical="top"
-            testID="input-message"
-          />
-        </View>
-
-        <Pressable
-          style={({ pressed }) => [
-            s.sendBtn,
-            !canSend && s.sendBtnDisabled,
-            pressed && canSend && s.pressed,
-          ]}
-          onPress={handleSend}
-          disabled={!canSend}
-          testID="send-btn"
-        >
-          {sent ? (
-            <>
-              <Feather name="check" size={18} color={colors.primaryForeground} />
-              <Text style={s.sendBtnText}>Sent!</Text>
-            </>
-          ) : (
-            <>
-              <Text style={s.sendBtnText}>Send Message</Text>
-              <Feather name="send" size={18} color={colors.primaryForeground} />
-            </>
-          )}
-        </Pressable>
-      </View>
-
-      <View style={s.divider} />
-
-      <View style={s.socialSection}>
-        <Text style={s.socialTitle}>Or find me on</Text>
-        <View style={s.socialList}>
-          {SOCIAL_ENTRIES.map((entry) => (
-            <Pressable
-              key={entry.key}
-              style={({ pressed }) => [s.socialItem, pressed && s.pressed]}
-              onPress={() => handleSocial(SOCIAL_LINKS[entry.key])}
-              testID={`contact-social-${entry.key}`}
-            >
-              <View style={s.socialIcon}>
-                <Feather name={entry.icon} size={20} color={colors.primary} />
-              </View>
-              <Text style={s.socialLabel}>{entry.label}</Text>
-              <Feather name="chevron-right" size={18} color={colors.mutedForeground} />
-            </Pressable>
-          ))}
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </FocusFadeView>
   );
 }
 
@@ -273,9 +399,6 @@ function styles(colors: ReturnType<typeof useColors>) {
       fontSize: 15,
       fontWeight: "500" as const,
       color: colors.foreground,
-    },
-    pressed: {
-      opacity: 0.7,
     },
   });
 }
